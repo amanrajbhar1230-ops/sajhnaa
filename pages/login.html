@@ -23,7 +23,6 @@
         <div class="tabs" style="margin-bottom:var(--space-6)">
           <button class="tab active" onclick="switchAuthTab('login', this)">Sign In</button>
           <button class="tab" onclick="switchAuthTab('register', this)">Register</button>
-          <button class="tab" onclick="switchAuthTab('phone', this)">Phone</button>
         </div>
 
         <!-- Login Form -->
@@ -43,31 +42,6 @@
             <div class="form-group"><label for="regEmail">Email</label><input type="email" id="regEmail" placeholder="your@email.com" required></div>
             <div class="form-group"><label for="regPassword">Password</label><input type="password" id="regPassword" placeholder="Min 6 characters" required minlength="6"></div>
             <button type="submit" class="btn btn-primary btn-full btn-lg">Create Account</button>
-          </form>
-        </div>
-
-        <!-- Phone Login Form -->
-        <div id="tab-phone" class="tab-content">
-          <form id="phoneLoginForm">
-            <div class="form-group">
-              <label for="phoneNumber">Phone Number</label>
-              <div style="display:flex;gap:10px">
-                <input type="tel" id="phoneNumber" placeholder="+91 1234567890" style="flex:1">
-                <button type="button" id="sendOtpBtn" class="btn btn-primary btn-sm" onclick="handleSendOTP()">Send OTP</button>
-              </div>
-            </div>
-            
-            <div id="otpSection" style="display:none;margin-top:var(--space-4)">
-              <div class="form-group">
-                <label for="otpCode">Verification Code</label>
-                <input type="text" id="otpCode" placeholder="Enter 6-digit OTP">
-              </div>
-              <button type="button" id="verifyOtpBtn" class="btn btn-primary btn-full" onclick="handleVerifyOTP()">Verify & Login</button>
-              <p id="resendTimer" style="font-size:var(--text-xs);color:var(--color-gray-500);margin-top:var(--space-2);text-align:center"></p>
-            </div>
-            
-            <!-- Recaptcha Container -->
-            <div id="recaptcha-container" style="margin-top:var(--space-4)"></div>
           </form>
         </div>
 
@@ -123,63 +97,6 @@
       if (email) ShivaniAuth.resetPassword(email);
     }
 
-    // --- Phone Login Logic ---
-    let resendInterval;
-    async function handleSendOTP() {
-      const phone = document.getElementById('phoneNumber').value;
-      if (!phone) { ShivaniUtils.showToast('Please enter a phone number', 'error'); return; }
-
-      const btn = document.getElementById('sendOtpBtn');
-      ShivaniUtils.setLoading(btn, true);
-
-      try {
-        await ShivaniAuth.sendOTP(phone, 'recaptcha-container');
-        document.getElementById('otpSection').style.display = 'block';
-        startResendTimer();
-        ShivaniUtils.showToast('OTP sent successfully', 'success');
-      } catch (error) {
-        console.error(error);
-      } finally {
-        ShivaniUtils.setLoading(btn, false);
-      }
-    }
-
-    async function handleVerifyOTP() {
-      const code = document.getElementById('otpCode').value;
-      if (!code) { ShivaniUtils.showToast('Please enter the 6-digit OTP', 'error'); return; }
-
-      const btn = document.getElementById('verifyOtpBtn');
-      ShivaniUtils.setLoading(btn, true);
-
-      try {
-        await ShivaniAuth.verifyOTP(code);
-        ShivaniUtils.showToast('Login successful!', 'success');
-        window.location.href = '../index.html';
-      } catch (error) {
-        console.error(error);
-      } finally {
-        ShivaniUtils.setLoading(btn, false);
-      }
-    }
-
-    function startResendTimer() {
-      const btn = document.getElementById('sendOtpBtn');
-      const timerLabel = document.getElementById('resendTimer');
-      let timeLeft = 30;
-      
-      btn.disabled = true;
-      clearInterval(resendInterval);
-      
-      resendInterval = setInterval(() => {
-        timeLeft--;
-        timerLabel.textContent = `You can resend OTP in ${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(resendInterval);
-          btn.disabled = false;
-          timerLabel.textContent = '';
-        }
-      }, 1000);
-    }
   </script>
 </body>
 </html>

@@ -115,68 +115,7 @@ const ShivaniAuth = (() => {
     }
   };
 
-  /* ---- Phone Authentication (OTP) ---- */
-  let confirmationResult = null;
-  let recaptchaVerifier = null;
 
-  const sendOTP = async (phoneNumber, containerId) => {
-    if (!ShivaniFirebase.isInitialized()) {
-      ShivaniUtils.showToast('OTP sent (demo mode: 123456)');
-      return true;
-    }
-
-    try {
-      if (!recaptchaVerifier) {
-        recaptchaVerifier = new firebase.auth.RecaptchaVerifier(containerId, {
-          'size': 'normal',
-          'callback': (response) => {
-            // reCAPTCHA solved, allow signInWithPhoneNumber.
-          }
-        });
-        await recaptchaVerifier.render();
-      }
-
-      confirmationResult = await ShivaniFirebase.getAuth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier);
-      return true;
-    } catch (e) {
-      if (recaptchaVerifier) {
-        recaptchaVerifier.clear();
-        recaptchaVerifier = null;
-      }
-      ShivaniUtils.showToast(e.message, 'error');
-      throw e;
-    }
-  };
-
-  const verifyOTP = async (code) => {
-    if (!ShivaniFirebase.isInitialized()) {
-      if (code === '123456') {
-        const user = { uid: ShivaniUtils.generateId('U'), phone: '+91123456789', displayName: 'Phone User' };
-        currentUser = user;
-        ShivaniUtils.storage.set('mockUser', user);
-        updateUI();
-        return user;
-      } else {
-        throw new Error('Invalid OTP');
-      }
-    }
-
-    try {
-      if (!confirmationResult) throw new Error('No OTP sent yet');
-      const cred = await confirmationResult.confirm(code);
-      // Create user doc if new
-      await ShivaniFirebase.getDb().collection('users').doc(cred.user.uid).set({
-        name: cred.user.displayName || 'Phone User',
-        phone: cred.user.phoneNumber,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-      ShivaniUtils.showToast('OTP verified!');
-      return cred.user;
-    } catch (e) {
-      ShivaniUtils.showToast(e.message, 'error');
-      throw e;
-    }
-  };
 
   /* ---- Sign Out ---- */
   const signOut = async () => {
@@ -228,5 +167,5 @@ const ShivaniAuth = (() => {
     return true;
   };
 
-  return { init, signUp, signIn, signInWithGoogle, resetPassword, signOut, getUser, isLoggedIn, isAdmin, requireAuth, updateUI, sendOTP, verifyOTP };
+  return { init, signUp, signIn, signInWithGoogle, resetPassword, signOut, getUser, isLoggedIn, isAdmin, requireAuth, updateUI };
 })();
