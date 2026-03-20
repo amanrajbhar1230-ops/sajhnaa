@@ -94,14 +94,11 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  
   <script src="../js/utils.js"></script>
-  <script src="../js/firebase-config.js"></script>
-  <script src="../js/admin.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => { ShivaniFirebase.init(); ShivaniAdmin.init(); });
+  <script type="module">
+    import { init, logout, saveProduct, initAddProduct, toggleModal } from '../js/admin.js';
+    window.ShivaniAdmin = { logout, saveProduct, initAddProduct, toggleModal };
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

@@ -137,42 +137,35 @@
   <div id="siteFooter"></div>
 
   <!-- Scripts -->
-  <!-- Firebase SDK (Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
-
   <script src="js/utils.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/cart.js"></script>
-  <script src="js/wishlist.js"></script>
-  <script src="js/products.js"></script>
-  <script src="js/search.js"></script>
-  <script src="js/chatbot.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
+  <script type="module">
+    // Modular init
+    import { init as initAuth } from './js/auth.js';
+    import ShivaniProducts from './js/products.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Init Auth Module
+      initAuth();
+      
       // Render trending
       const trendingContainer = document.getElementById('trendingProducts');
       if (trendingContainer) {
-        const trending = ShivaniProducts.getTrending();
-        trendingContainer.innerHTML = trending.map(p => ShivaniProducts.renderCard(p)).join('');
-        ShivaniUtils.initLazyImages();
+        const trending = await ShivaniProducts.getFeatured();
+        ShivaniProducts.renderGrid(trending, 'trendingProducts');
       }
-      // Render best sellers (by reviews count)
+
+      // Render best sellers (simplified for now)
       const bestContainer = document.getElementById('bestSellers');
       if (bestContainer) {
-        const all = [...ShivaniProducts.getAll()].sort((a, b) => b.reviews - a.reviews).slice(0, 8);
-        bestContainer.innerHTML = all.map(p => ShivaniProducts.renderCard(p)).join('');
-        ShivaniUtils.initLazyImages();
+        const best = await ShivaniProducts.getFeatured(); // Reusing featured for BEST
+        ShivaniProducts.renderGrid(best, 'bestSellers');
       }
+
       // Recently viewed
       const recent = ShivaniUtils.getRecentlyViewed();
-      if (recent.length > 0) {
-        document.getElementById('recentlyViewedSection').style.display = '';
+      if (recent && recent.length > 0) {
+        const section = document.getElementById('recentlyViewedSection');
+        if (section) section.style.display = 'block';
         const recentContainer = document.getElementById('recentlyViewed');
         if (recentContainer) {
           recentContainer.innerHTML = recent.map(p => `
@@ -189,6 +182,15 @@
         }
       }
     });
+
+    // Make Products available globally for other scripts that might need it
+    window.ShivaniProducts = ShivaniProducts;
   </script>
+  <!-- Non-modular UI scripts (using global shims) -->
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
