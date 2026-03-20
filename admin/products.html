@@ -3,50 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Products — Admin</title>
+  <title>Products Management — Shivani Jewellery</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/layout2.css">
   <link rel="stylesheet" href="../css/admin.css">
 </head>
-<body>
+<body class="admin-body">
   <div class="admin-layout">
+    <!-- Sidebar -->
     <aside class="admin-sidebar" id="adminSidebar">
-      <a href="../index.html" class="admin-sidebar__logo"><span style="color:var(--color-gold)">✦</span> SHIVANI</a>
+      <a href="../index.html" class="admin-sidebar__logo">SHIVANI</a>
       <nav class="admin-sidebar__nav">
         <a href="index.html" class="admin-sidebar__link"><span class="admin-sidebar__link-icon">📊</span> Dashboard</a>
         <a href="products.html" class="admin-sidebar__link active"><span class="admin-sidebar__link-icon">💎</span> Products</a>
         <a href="orders.html" class="admin-sidebar__link"><span class="admin-sidebar__link-icon">📦</span> Orders</a>
-        <a href="banners.html" class="admin-sidebar__link"><span class="admin-sidebar__link-icon">🖼</span> Banners</a>
+        <a href="#" class="admin-sidebar__link" onclick="ShivaniAdmin.logout();return false;" style="margin-top:auto;color:var(--color-error)"><span class="admin-sidebar__link-icon">🚪</span> Logout</a>
       </nav>
     </aside>
+
+    <!-- Main -->
     <div class="admin-main">
       <div class="admin-header">
         <button class="admin-header__toggle" onclick="document.getElementById('adminSidebar').classList.toggle('active')">☰</button>
-        <h1 class="admin-header__title">Products</h1>
-        <button class="btn btn-primary btn-sm" onclick="ShivaniUtils.showToast('Add Product form (connect Firestore for full CRUD)','info')">+ Add Product</button>
+        <h1 class="admin-header__title">Products Management</h1>
+        <button class="admin-btn" onclick="ShivaniAdmin.initAddProduct()">+ Add Product</button>
       </div>
-      <div class="admin-content">
-        <div class="data-table-wrapper"><div id="adminProducts"></div></div>
+      
+      <div class="admin-content animate-fade-in-up">
+        <div class="data-table-wrapper" id="adminProductTable">
+          <div style="padding:40px;text-align:center;color:var(--admin-text-muted)">Loading products inventory...</div>
+        </div>
       </div>
     </div>
   </div>
-    <!-- Firebase SDK (Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
-<script src="../js/utils.js"></script>
+  <!-- Add/Edit Product Modal -->
+  <div class="admin-modal-backdrop" id="productModal">
+    <div class="admin-modal">
+      <div class="data-table-header">
+        <h3 style="font-size:20px;color:var(--admin-gold)" id="modalTitle">Add New Product</h3>
+        <button onclick="ShivaniAdmin.toggleModal('productModal')" style="color:white;font-size:24px">✕</button>
+      </div>
+      <div style="padding:var(--space-8)">
+        <form id="productForm" onsubmit="ShivaniAdmin.saveProduct(event)">
+          <input type="hidden" id="prodId">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)">
+            <div class="admin-form-group">
+              <label>Product Name</label>
+              <input type="text" id="prodName" class="admin-input" placeholder="E.g. Royal Gold Necklace" required>
+            </div>
+            <div class="admin-form-group">
+              <label>Category</label>
+              <select id="prodCategory" class="admin-select" required>
+                <option value="Necklaces">Necklaces</option>
+                <option value="Earrings">Earrings</option>
+                <option value="Rings">Rings</option>
+                <option value="Bracelets">Bracelets</option>
+                <option value="Bridal">Bridal</option>
+                <option value="Anklets">Anklets</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)">
+            <div class="admin-form-group">
+              <label>Discount Price (₹)</label>
+              <input type="number" id="prodPrice" class="admin-input" placeholder="999" required>
+            </div>
+            <div class="admin-form-group">
+              <label>Original Price (₹)</label>
+              <input type="number" id="prodOrigPrice" class="admin-input" placeholder="1999" required>
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label>Image URL</label>
+            <input type="text" id="prodImage" class="admin-input" placeholder="https://..." required>
+          </div>
+          <div class="admin-form-group">
+            <label>Description</label>
+            <textarea id="prodDesc" class="admin-textarea" placeholder="Premium quality details..." required rows="4"></textarea>
+          </div>
+          <div class="admin-form-group" style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" id="prodFeatured">
+            <label style="margin-bottom:0">Featured Product (Show on homepage)</label>
+          </div>
+          <div style="margin-top:var(--space-8);text-align:right">
+            <button type="submit" class="admin-btn" style="width:100%">Save Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="../js/utils.js"></script>
   <script src="../js/firebase-config.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/cart.js"></script>
-  <script src="../js/wishlist.js"></script>
-  <script src="../js/products.js"></script>
   <script src="../js/admin.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', () => { ShivaniFirebase.init(); ShivaniAdmin.renderProducts(); });</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { ShivaniFirebase.init(); ShivaniAdmin.init(); });
+  </script>
 </body>
 </html>

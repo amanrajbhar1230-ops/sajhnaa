@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Shivani Jewellery</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body admin-login-page">
+  <div class="admin-login-card animate-scale-in">
+    <div style="text-align:center;margin-bottom:var(--space-8)">
+      <h2 style="font-family:var(--font-display);color:var(--admin-gold);font-size:32px;margin-bottom:8px">SHIVANI</h2>
+      <p style="color:var(--admin-text-muted);font-size:14px;text-transform:uppercase;letter-spacing:2px">Admin Panel Entrance</p>
+    </div>
+    
+    <form onsubmit="handleAdminLogin(event)">
+      <div class="admin-form-group">
+        <label>Admin Security Password</label>
+        <input type="password" id="adminPass" class="admin-input" placeholder="Enter password" required autofocus>
+      </div>
+      <button type="submit" class="admin-btn" style="width:100%;margin-top:var(--space-4)">Unlock Dashboard</button>
+    </form>
+    
+    <div style="margin-top:var(--space-8);text-align:center">
+      <a href="../index.html" style="color:var(--admin-text-muted);font-size:12px;text-decoration:none">← Return to Store</a>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('adminPass').value;
+      if (pass === 'SHI7046') {
+        localStorage.setItem('shivani_admin_session', 'active_' + Date.now());
+        ShivaniUtils.showToast('Access Granted', 'success');
+        setTimeout(() => window.location.href = 'index.html', 800);
+      } else {
+        ShivaniUtils.showToast('Invalid Security Password', 'error');
+        document.getElementById('adminPass').value = '';
+      }
+    }
+    // Auto redirect if already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('shivani_admin_session')) window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

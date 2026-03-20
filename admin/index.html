@@ -6,22 +6,18 @@
   <title>Admin Dashboard — Shivani Jewellery</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/layout2.css">
   <link rel="stylesheet" href="../css/admin.css">
 </head>
-<body>
+<body class="admin-body">
   <div class="admin-layout">
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="adminSidebar">
-      <a href="../index.html" class="admin-sidebar__logo"><span style="color:var(--color-gold)">✦</span> SHIVANI</a>
+      <a href="../index.html" class="admin-sidebar__logo">SHIVANI</a>
       <nav class="admin-sidebar__nav">
         <a href="index.html" class="admin-sidebar__link active"><span class="admin-sidebar__link-icon">📊</span> Dashboard</a>
         <a href="products.html" class="admin-sidebar__link"><span class="admin-sidebar__link-icon">💎</span> Products</a>
         <a href="orders.html" class="admin-sidebar__link"><span class="admin-sidebar__link-icon">📦</span> Orders</a>
-        <a href="banners.html" class="admin-sidebar__link"><span class="admin-sidebar__link-icon">🖼</span> Banners</a>
-        <a href="../index.html" class="admin-sidebar__link" style="margin-top:auto"><span class="admin-sidebar__link-icon">🏠</span> View Store</a>
+        <a href="#" class="admin-sidebar__link" onclick="ShivaniAdmin.logout();return false;" style="margin-top:auto;color:var(--color-error)"><span class="admin-sidebar__link-icon">🚪</span> Logout</a>
       </nav>
     </aside>
 
@@ -30,38 +26,43 @@
       <div class="admin-header">
         <button class="admin-header__toggle" onclick="document.getElementById('adminSidebar').classList.toggle('active')">☰</button>
         <h1 class="admin-header__title">Dashboard</h1>
-        <div style="font-size:var(--text-sm);color:var(--color-gray-500)">Welcome, Admin</div>
+        <div style="font-size:var(--text-sm);color:var(--admin-text-muted)">Welcome back, <span style="color:var(--admin-gold)">Aman</span></div>
       </div>
-      <div class="admin-content">
-        <!-- Stats -->
-        <div class="stats-grid" id="adminStats"></div>
+      
+      <div class="admin-content animate-fade-in-up">
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="adminStats">
+          <div class="stat-card skeleton" style="height:120px"></div>
+          <div class="stat-card skeleton" style="height:120px"></div>
+          <div class="stat-card skeleton" style="height:120px"></div>
+          <div class="stat-card skeleton" style="height:120px"></div>
+        </div>
 
         <!-- Recent Orders -->
         <div class="data-table-wrapper">
           <div class="data-table-header">
-            <h3 style="font-size:var(--text-lg)">Recent Orders</h3>
-            <a href="orders.html" class="btn btn-sm btn-ghost">View All →</a>
+            <h3 style="font-size:18px;font-family:var(--font-display)">Recent Orders</h3>
+            <a href="orders.html" class="admin-btn admin-btn-outline" style="font-size:12px;padding:6px 12px">View All</a>
           </div>
-          <div id="recentOrders"></div>
+          <div id="recentOrders">
+            <!-- Loaded via JS -->
+            <div style="padding:40px;text-align:center;color:var(--admin-text-muted)">Loading tracking data...</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-    <!-- Firebase SDK (Compat) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
-
-<script src="../js/utils.js"></script>
+  
+  <script src="../js/utils.js"></script>
   <script src="../js/firebase-config.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/cart.js"></script>
-  <script src="../js/wishlist.js"></script>
-  <script src="../js/products.js"></script>
   <script src="../js/admin.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', () => { ShivaniFirebase.init(); ShivaniAdmin.init(); });</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { ShivaniFirebase.init(); ShivaniAdmin.init(); });
+  </script>
 </body>
 </html>
