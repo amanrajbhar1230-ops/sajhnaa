@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Premium Artificial Jewellery E-commerce",
   "scripts": {
-    "start": "npx serve .",
-    "build": "echo 'Static build complete'"
+    "start": "npx serve ."
   },
   "dependencies": {
     "firebase": "^9.22.0"
