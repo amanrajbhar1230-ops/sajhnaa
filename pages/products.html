@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop All Jewellery — Shivani</title>
+  <meta name="description" content="Browse our complete collection of artificial jewellery — Necklaces, Earrings, Rings, Bridal Sets and more.">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/layout2.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <div id="siteHeader"></div>
+  <main class="main">
+    <div class="container section">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="separator">›</span><span class="current" id="pageCategoryTitle">Shop All</span></div>
+
+      <div class="layout-with-sidebar">
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar" id="filterSidebar">
+          <div class="filter-sidebar__header">
+            <h3 class="filter-sidebar__title">Filters</h3>
+            <span class="filter-sidebar__clear" onclick="clearAllFilters()">Clear All</span>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group__title">Category</h4>
+            <div class="filter-group__options" id="categoryFilters"></div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group__title">Price Range</h4>
+            <div class="price-range">
+              <input type="range" id="priceRange" min="0" max="10000" value="10000" oninput="updatePriceFilter(this.value)">
+              <div class="price-range__values"><span>₹0</span><span id="priceMaxLabel">₹10,000</span></div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group__title">Occasion</h4>
+            <div class="filter-group__options" id="occasionFilters"></div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group__title">Color</h4>
+            <div class="color-swatches" id="colorFilters"></div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group__title">Rating</h4>
+            <div class="filter-group__options">
+              <label class="filter-option"><input type="radio" name="rating" value="4" onchange="setRatingFilter(4)"> ★★★★ & above</label>
+              <label class="filter-option"><input type="radio" name="rating" value="3" onchange="setRatingFilter(3)"> ★★★ & above</label>
+              <label class="filter-option"><input type="radio" name="rating" value="0" onchange="setRatingFilter(0)" checked> All ratings</label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" style="margin-top:var(--space-4)" onclick="toggleFilterSidebar()">Apply Filters</button>
+        </aside>
+
+        <!-- Product Area -->
+        <div>
+          <div class="sort-bar">
+            <button class="filter-toggle-btn" onclick="toggleFilterSidebar()">⚙ Filters</button>
+            <span class="sort-bar__count" id="productCount">0 products</span>
+            <div class="sort-bar__options">
+              <select class="sort-bar__select" id="sortSelect" onchange="applySort(this.value)">
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="newest">Newest</option>
+                <option value="rating">Best Rated</option>
+                <option value="bestselling">Best Selling</option>
+              </select>
+            </div>
+          </div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="filter-overlay" id="filterOverlay" onclick="toggleFilterSidebar()"></div>
+  <div id="siteFooter"></div>
+
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+  <script src="../js/utils.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/wishlist.js"></script>
+  <script src="../js/products.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/chatbot.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    // Build filter UI
+    function buildFilters() {
+      const catContainer = document.getElementById('categoryFilters');
+      catContainer.innerHTML = ShivaniProducts.CATEGORIES.map(c => `<label class="filter-option"><input type="checkbox" value="${c}" onchange="applyFilters()"> ${c}</label>`).join('');
+
+      const occContainer = document.getElementById('occasionFilters');
+      occContainer.innerHTML = ShivaniProducts.OCCASIONS.map(o => `<label class="filter-option"><input type="checkbox" value="${o}" onchange="applyFilters()"> ${o}</label>`).join('');
+
+      const colorContainer = document.getElementById('colorFilters');
+      const colorMap = { Gold: '#C6A96C', Silver: '#C0C0C0', 'Rose Gold': '#B76E79', White: '#F5F5F5', Green: '#2E7D4F', Multi: 'linear-gradient(45deg,#C6A96C,#B76E79,#2E7D4F)' };
+      colorContainer.innerHTML = ShivaniProducts.COLORS.map(c => `<div class="color-swatch" style="background:${colorMap[c]}" title="${c}" data-color="${c}" onclick="toggleColor(this)"></div>`).join('');
+    }
+
+    function applyFilters() {
+      const cats = [...document.querySelectorAll('#categoryFilters input:checked')].map(i => i.value);
+      const occs = [...document.querySelectorAll('#occasionFilters input:checked')].map(i => i.value);
+      ShivaniProducts.setFilters({ categories: cats, occasions: occs });
+      ShivaniProducts.renderGrid('productGrid');
+    }
+
+    function updatePriceFilter(val) {
+      document.getElementById('priceMaxLabel').textContent = ShivaniUtils.formatPrice(val);
+      ShivaniProducts.setFilters({ priceRange: [0, parseInt(val)] });
+      ShivaniProducts.renderGrid('productGrid');
+    }
+
+    function setRatingFilter(rating) {
+      ShivaniProducts.setFilters({ rating: parseInt(rating) });
+      ShivaniProducts.renderGrid('productGrid');
+    }
+
+    let selectedColors = [];
+    function toggleColor(el) {
+      const color = el.dataset.color;
+      el.classList.toggle('active');
+      if (selectedColors.includes(color)) selectedColors = selectedColors.filter(c => c !== color);
+      else selectedColors.push(color);
+      ShivaniProducts.setFilters({ colors: selectedColors });
+      ShivaniProducts.renderGrid('productGrid');
+    }
+
+    function applySort(val) {
+      ShivaniProducts.setSort(val);
+      ShivaniProducts.renderGrid('productGrid');
+    }
+
+    function clearAllFilters() {
+      selectedColors = [];
+      document.querySelectorAll('#filterSidebar input[type="checkbox"]').forEach(i => i.checked = false);
+      document.querySelector('#filterSidebar input[value="0"]').checked = true;
+      document.getElementById('priceRange').value = 10000;
+      document.getElementById('priceMaxLabel').textContent = '₹10,000';
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      ShivaniProducts.setFilters({ categories: [], occasions: [], colors: [], priceRange: [0, 10000], rating: 0 });
+      ShivaniProducts.renderGrid('productGrid');
+    }
+
+    function toggleFilterSidebar() {
+      document.getElementById('filterSidebar').classList.toggle('active');
+      document.getElementById('filterOverlay').classList.toggle('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      buildFilters();
+      // Check URL params for pre-filtering
+      const cat = ShivaniUtils.getParam('category');
+      const filter = ShivaniUtils.getParam('filter');
+      if (cat) {
+        ShivaniProducts.setFilters({ categories: [cat] });
+        document.getElementById('pageCategoryTitle').textContent = cat;
+        document.title = `${cat} — Shivani Jewellery`;
+        const checkbox = document.querySelector(`#categoryFilters input[value="${cat}"]`);
+        if (checkbox) checkbox.checked = true;
+      }
+      if (filter === 'trending') {
+        document.getElementById('pageCategoryTitle').textContent = 'Trending';
+        document.title = 'Trending — Shivani Jewellery';
+      }
+      ShivaniProducts.renderGrid('productGrid');
+    });
+  </script>
+</body>
+</html>

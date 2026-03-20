@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail — Shivani Jewellery</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/layout2.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <div id="siteHeader"></div>
+  <main class="main">
+    <div class="container section">
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div class="product-detail">
+        <div class="product-gallery">
+          <div class="product-gallery__main"><img id="mainImage" src="" alt="Product"></div>
+          <div class="product-gallery__thumbs" id="thumbsContainer"></div>
+        </div>
+        <div class="product-info" id="productInfo"></div>
+      </div>
+
+      <!-- Tabs: Description / Reviews -->
+      <div style="margin-top:var(--space-12)">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('description', this)">Description</button>
+          <button class="tab" onclick="switchTab('reviews', this)">Reviews</button>
+        </div>
+        <div class="tab-content active" id="tab-description">
+          <div id="productDescription" style="max-width:800px;line-height:1.8;color:var(--color-gray-600)"></div>
+        </div>
+        <div class="tab-content" id="tab-reviews">
+          <div id="reviewsList"></div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <section style="margin-top:var(--space-12)">
+        <h2 class="section-title">You May Also Like</h2>
+        <div class="product-grid" id="relatedProducts" style="margin-top:var(--space-6)"></div>
+      </section>
+    </div>
+  </main>
+  <div id="siteFooter"></div>
+
+    <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+<script src="../js/utils.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/wishlist.js"></script>
+  <script src="../js/products.js"></script>
+  <script src="../js/product-detail.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/chatbot.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      ShivaniProductDetail.init();
+      const product = ShivaniProducts.getById(ShivaniUtils.getParam('id'));
+      if (product) {
+        document.getElementById('productDescription').innerHTML = `<p>${product.description}</p><p><strong>Material:</strong> ${product.material}</p><p><strong>Color:</strong> ${product.color}</p><p><strong>Best for:</strong> ${product.occasion}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

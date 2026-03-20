@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Shivani Jewellery</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/layout2.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <div id="siteHeader"></div>
+  <main class="main">
+    <div class="container section">
+      <h1 style="margin-bottom:var(--space-6)">Checkout</h1>
+      <div id="checkoutSteps"></div>
+      <div class="checkout-layout">
+        <div>
+          <!-- Step 1: Address -->
+          <div class="checkout-step active" id="step1">
+            <div class="checkout-card">
+              <h3 class="checkout-card__title">Delivery Address</h3>
+              <div class="form-row">
+                <div class="form-group"><label for="fullName">Full Name *</label><input type="text" id="fullName" placeholder="Enter full name"></div>
+                <div class="form-group"><label for="phone">Phone *</label><input type="tel" id="phone" placeholder="10-digit mobile"></div>
+              </div>
+              <div class="form-group"><label for="email">Email *</label><input type="email" id="email" placeholder="Email address"></div>
+              <div class="form-group"><label for="address">Address *</label><textarea id="address" placeholder="House no, Street, Landmark"></textarea></div>
+              <div class="form-row">
+                <div class="form-group"><label for="city">City *</label><input type="text" id="city" placeholder="City"></div>
+                <div class="form-group"><label for="state">State *</label><input type="text" id="state" placeholder="State"></div>
+              </div>
+              <div class="form-group"><label for="pincode">Pincode *</label><input type="text" id="pincode" placeholder="6-digit pincode" maxlength="6"></div>
+              <button class="btn btn-primary btn-lg" onclick="ShivaniCheckout.goToStep(2)" style="margin-top:var(--space-4)">Continue to Payment →</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Payment -->
+          <div class="checkout-step" id="step2">
+            <div class="checkout-card">
+              <h3 class="checkout-card__title">Payment Method</h3>
+              <div class="payment-option selected" data-payment="cod" onclick="ShivaniCheckout.setPayment('cod')">
+                <input type="radio" name="payment" value="cod" checked>
+                <div><div class="payment-option__label">💵 Cash on Delivery</div><div class="payment-option__desc">Pay when you receive your order</div></div>
+              </div>
+              <div class="payment-option" data-payment="upi" onclick="ShivaniCheckout.setPayment('upi')">
+                <input type="radio" name="payment" value="upi">
+                <div><div class="payment-option__label">📱 UPI (GPay / PhonePe)</div><div class="payment-option__desc">Pay using your UPI app</div></div>
+              </div>
+              <div class="payment-option" data-payment="card" onclick="ShivaniCheckout.setPayment('card')">
+                <input type="radio" name="payment" value="card">
+                <div><div class="payment-option__label">💳 Credit / Debit Card</div><div class="payment-option__desc">Visa, Mastercard, Rupay</div></div>
+              </div>
+              <div style="display:flex;gap:var(--space-3);margin-top:var(--space-6)">
+                <button class="btn btn-ghost" onclick="ShivaniCheckout.goToStep(1)">← Back</button>
+                <button class="btn btn-primary btn-lg" onclick="ShivaniCheckout.goToStep(3);ShivaniCheckout.renderReviewStep()">Review Order →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Review -->
+          <div class="checkout-step" id="step3">
+            <div id="reviewContent"></div>
+            <div style="display:flex;gap:var(--space-3);margin-top:var(--space-6)">
+              <button class="btn btn-ghost" onclick="ShivaniCheckout.goToStep(2)">← Back</button>
+              <button class="btn btn-primary btn-lg" onclick="ShivaniCheckout.placeOrder()">🎉 Place Order</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cart-summary" id="checkoutSummary"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="siteFooter"></div>
+    <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+<script src="../js/utils.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/wishlist.js"></script>
+  <script src="../js/products.js"></script>
+  <script src="../js/checkout.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/chatbot.js"></script>
+  <script src="../js/app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => ShivaniCheckout.init());</script>
+</body>
+</html>
